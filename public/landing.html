@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TravelDesk — AI Assistant for Independent Travel Agents</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent:      #2563eb;
+      --accent-dark: #1d4ed8;
+      --accent-soft: #eff6ff;
+      --green:       #10b981;
+      --green-soft:  #ecfdf5;
+      --text:        #111827;
+      --muted:       #6b7280;
+      --border:      #e5e7eb;
+      --surface:     #ffffff;
+      --bg:          #f8fafc;
+      --radius:      12px;
+    }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--accent);
+    }
+    .logo-icon {
+      width: 34px; height: 34px;
+      background: var(--accent);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-icon svg { color: #fff; }
+    .header-right { display: flex; align-items: center; gap: 1rem; }
+    .nav-link {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .nav-link:hover { color: var(--text); }
+
+    /* ── Hero ── */
+    .hero-wrap {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%);
+      color: #fff;
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 1.75rem;
+    }
+    .hero h1 {
+      font-size: clamp(2.25rem, 5.5vw, 3.75rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.12;
+      margin-bottom: 1.25rem;
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero h1 em { font-style: normal; opacity: 0.85; }
+    .hero p {
+      font-size: 1.15rem;
+      opacity: 0.85;
+      line-height: 1.7;
+      max-width: 520px;
+      margin: 0 auto 2.75rem;
+    }
+    .hero-cta { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #fff;
+      color: var(--accent);
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.15s;
+      font-family: inherit;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(0,0,0,0.2); }
+    .btn-primary:active:not(:disabled) { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.65; cursor: not-allowed; }
+    .hero-sub { font-size: 0.82rem; opacity: 0.7; margin-top: 1rem; }
+
+    /* ── How it works ── */
+    .section { max-width: 960px; margin: 0 auto; padding: 4rem 2rem; }
+    .section-label {
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+    }
+    .section-sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .step { text-align: center; }
+    .step-num {
+      width: 48px; height: 48px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin: 0 auto 1rem;
+    }
+    .step-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .step-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── Features ── */
+    .features-bg { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .feature-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+    .feature-icon {
+      width: 44px; height: 44px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .feature-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .feature-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── Pricing ── */
+    .pricing-card {
+      max-width: 420px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 2px solid var(--accent);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(37,99,235,0.12);
+    }
+    .pricing-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .pricing-amount { font-size: 4rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; }
+    .pricing-amount sup { font-size: 1.5rem; vertical-align: super; }
+    .pricing-period { color: var(--muted); font-size: 0.9rem; margin: 0.5rem 0 2rem; }
+    .pricing-features { list-style: none; margin-bottom: 2rem; text-align: left; }
+    .pricing-features li {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.9rem; padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .pricing-features li:last-child { border-bottom: none; }
+    .check {
+      width: 20px; height: 20px;
+      background: var(--green-soft); color: var(--green);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 0.65rem; font-weight: 800;
+    }
+    .btn-cta {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background 0.15s, transform 0.1s;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+    }
+    .btn-cta:hover:not(:disabled) { background: var(--accent-dark); }
+    .btn-cta:active:not(:disabled) { transform: scale(0.98); }
+    .btn-cta:disabled { opacity: 0.65; cursor: not-allowed; }
+
+    footer {
+      margin-top: auto;
+      text-align: center;
+      padding: 1.5rem 2rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+      background: var(--surface);
+    }
+
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+    .spinner.dark {
+      border-color: rgba(37,99,235,0.25);
+      border-top-color: var(--accent);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 720px) {
+      .steps, .features-grid { grid-template-columns: 1fr; }
+      .hero-wrap { padding: 3.5rem 1.5rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+      </svg>
+    </div>
+    TravelDesk
+  </div>
+  <div class="header-right">
+    <span style="font-size:0.82rem;color:var(--muted)">Powered by Claude AI</span>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero-wrap">
+  <div class="hero-badge">✈️ Built for Independent Travel Agents</div>
+  <h1>Your clients get <em>instant answers.</em><br>You get your time back.</h1>
+  <p>TravelDesk puts an AI travel assistant on your website — trained on your business, your trips, and your FAQs — so you can focus on the work that actually needs you.</p>
+  <div class="hero-cta">
+    <button class="btn-primary" id="btn-hero" onclick="subscribe('btn-hero')">
+      Start Free Trial
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+      </svg>
+    </button>
+  </div>
+  <p class="hero-sub">7-day free trial &nbsp;·&nbsp; Then $49/month &nbsp;·&nbsp; Cancel anytime</p>
+</div>
+
+<!-- How it works -->
+<section class="section">
+  <div class="section-label">How It Works</div>
+  <h2 class="section-title">Set up in minutes. Works around the clock.</h2>
+  <p class="section-sub">TravelDesk learns your business so clients always get the right answer.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title">Add your business info</div>
+      <div class="step-desc">Enter your agency name, description, specialties, and any frequently asked questions. TravelDesk uses this to train your AI assistant.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title">Load your client trips</div>
+      <div class="step-desc">Add trips with destinations, dates, and booking references. Your assistant can answer client questions about their specific bookings.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title">Share your chat link</div>
+      <div class="step-desc">Give clients your unique chat URL or embed the widget on your site. Complex questions trigger an instant email alert to you.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<div class="features-bg">
+  <section class="section">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything an independent agent needs</h2>
+    <p class="section-sub">Smart enough to handle the easy stuff. Smart enough to know when to call you.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <div class="feature-title">Instant client chat</div>
+        <div class="feature-desc">A clean chat widget answers client questions 24/7 — tailored to your agency's voice, trips, and policies.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <div class="feature-title">Smart email alerts</div>
+        <div class="feature-desc">When a client asks something complex or needs human attention, you get an instant email with their question and context.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <div class="feature-title">Trip management</div>
+        <div class="feature-desc">Store client trips with destinations, dates, and booking references. Your AI assistant references these to answer booking questions.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <div class="feature-title">Custom FAQs</div>
+        <div class="feature-desc">Define the questions your clients ask most. Your AI will always answer them consistently, the way you want.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
+        <div class="feature-title">Embeddable widget</div>
+        <div class="feature-desc">Drop the chat on any website with a single link or iframe. No technical setup required — just copy and paste.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div class="feature-title">Powered by Claude AI</div>
+        <div class="feature-desc">Anthropic's Claude handles nuanced travel questions with accuracy and warmth — far beyond basic chatbots.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Pricing -->
+<section class="section">
+  <div class="section-label">Pricing</div>
+  <h2 class="section-title">Simple, flat-rate pricing</h2>
+  <p class="section-sub">One plan, everything included. Start with a free trial.</p>
+  <div class="pricing-card">
+    <div class="pricing-label">TravelDesk Pro</div>
+    <div class="pricing-amount"><sup>$</sup>49</div>
+    <div class="pricing-period">per month &mdash; 7-day free trial</div>
+    <ul class="pricing-features">
+      <li><span class="check">✓</span> Unlimited client chat messages</li>
+      <li><span class="check">✓</span> AI trained on your business &amp; trips</li>
+      <li><span class="check">✓</span> Custom FAQs</li>
+      <li><span class="check">✓</span> Smart email alerts</li>
+      <li><span class="check">✓</span> Embeddable chat widget</li>
+      <li><span class="check">✓</span> Agent dashboard</li>
+      <li><span class="check">✓</span> Cancel anytime</li>
+    </ul>
+    <button class="btn-cta" id="btn-pricing" onclick="subscribe('btn-pricing')">
+      Start Your Free Trial
+    </button>
+    <p style="font-size:0.78rem;color:var(--muted);margin-top:0.75rem">No charge for 7 days. Cancel before trial ends and pay nothing.</p>
+  </div>
+</section>
+
+<footer>
+  &copy; 2026 TravelDesk &nbsp;·&nbsp; Powered by Claude AI
+</footer>
+
+<script>
+  async function subscribe(btnId) {
+    const btn = document.getElementById(btnId);
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner dark"></div> Redirecting…';
+    try {
+      const resp = await fetch('/api/create-checkout-session', { method: 'POST' });
+      const data = await resp.json();
+      if (data.error) throw new Error(data.error);
+      window.location.href = data.url;
+    } catch {
+      btn.disabled = false;
+      btn.innerHTML = orig;
+      alert('Could not start checkout. Please try again.');
+    }
+  }
+</script>
+</body>
+</html>

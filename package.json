@@ -1,0 +1,19 @@
+{
+  "name": "traveldesk",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "AI assistant for independent travel agents",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.54.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.0",
+    "express": "^4.21.2",
+    "nodemailer": "^6.9.0",
+    "stripe": "^17.7.0"
+  }
+}
